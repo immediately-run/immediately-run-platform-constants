@@ -1,7 +1,7 @@
 {
   "name": "@immediately-run/platform-constants",
-  "version": "0.1.0",
-  "description": "The single source of truth for cross-repo platform vocabulary (the .immediately.run cache-zip sidecar layout). Consumed by cli, sandbox, and site-main so a rename/extension touches ONE package, not N repos in lockstep (R3-104).",
+  "version": "0.2.0",
+  "description": "The single source of truth for cross-repo platform vocabulary (the .immediately.run cache-zip sidecar layout + the content contract: APP_ROOT, the metadata key space, the frontmatter envelope, the mdx-metadata sidecar schema). Consumed by cli, sandbox, and site-main so a rename/extension touches ONE package, not N repos in lockstep (R3-104).",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "jest",
     "lint": "eslint src test",
+    "check:dependency-free": "node scripts/check-dependency-free.mjs --self-test && node scripts/check-dependency-free.mjs",
     "prepare": "npm run build"
   },
   "devDependencies": {

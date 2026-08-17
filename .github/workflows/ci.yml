@@ -32,6 +32,11 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: npm run lint
+      # R3-275: both sides of the sandbox<->SDK seam depend on this package and it
+      # depends on neither — that is what makes it a safe home for shared vocabulary.
+      # A runtime dep added here is inherited by every consumer, including the
+      # browser bundle. Asserted, not remembered.
+      - run: npm run check:dependency-free
       - name: Publish to npm via trusted publishing (skip if version already published)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:

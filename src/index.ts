@@ -42,3 +42,23 @@ export function isUnderSidecar(path: string): boolean {
   const rel = path.replace(/^\.?\//, "");
   return rel === SIDECAR_DIR || rel.startsWith(SIDECAR_PREFIX);
 }
+
+// ── The content contract (R3-275, PLATFORM_LAYERING_SPEC §3 / S2) ─────────────
+// The app-root path space, the metadata key derivation, the frontmatter envelope,
+// and the `mdx-metadata.json` sidecar schema + validator. Each of these was
+// previously declared independently on both sides of the sandbox↔SDK seam.
+export { APP_ROOT, underAppRoot, stripAppRoot, metadataKeyFor } from "./appRoot";
+export type { Frontmatter, JsonValue } from "./frontmatter";
+export { isFrontmatterEnvelope, isJsonSerializable } from "./frontmatter";
+export {
+  MDX_METADATA_SIDECAR_PATH,
+  MDX_METADATA_SCHEMA_VERSION,
+  validateMdxMetadataSidecar,
+  parseMdxMetadataSidecar,
+} from "./mdxMetadata";
+export type {
+  MdxMetadataFileEntry,
+  MdxMetadataSidecar,
+  MdxMetadataRejection,
+  MdxMetadataValidation,
+} from "./mdxMetadata";
