@@ -116,12 +116,47 @@ describe("frames are a registry-gated exception, not a payload accident", () => 
     );
   });
 
-  it("caps the frame list and each frame's length", () => {
-    // Uses a hand-built def-shaped event via a permitted name once R3-345 registers
-    // one; until then the negative path above is the binding assertion. This test
-    // pins the constants so a later change is deliberate.
-    expect(TELEMETRY_MAX_FRAMES).toBe(32);
-    expect(TELEMETRY_MAX_STR).toBe(256);
+  it("accepts frames on an event whose def permits them", () => {
+    expect(
+      validateTelemetryEvent({
+        name: "error.host",
+        at: "x",
+        tier: "T0",
+        props: { name: "TypeError", fingerprint: "a1b2c3d4" },
+        frames: ["at render (/static/js/main.abc.js:1:2345)"],
+      }),
+    ).toBeNull();
+  });
+
+  it("caps the frame list and each frame length", () => {
+    const ev = (frames: unknown[]) => ({ name: "error.host", at: "x", tier: "T0" as const, frames });
+    expect(validateTelemetryEvent(ev(Array.from({ length: TELEMETRY_MAX_FRAMES + 1 }, () => "f")))).toMatch(
+      /frames exceeds cap/,
+    );
+    expect(validateTelemetryEvent(ev(["a".repeat(TELEMETRY_MAX_STR + 1)]))).toMatch(/frame exceeds string cap/);
+    expect(validateTelemetryEvent(ev([42]))).toMatch(/frame must be a string/);
+  });
+
+  it("G-TEL-5 — the app error row has NO frames key at all, so it cannot grow one by accident", () => {
+    // The operator row for an app error is content-free BY CONSTRUCTION: the def does
+    // not set `frames`, so the validator refuses them outright rather than relying on a
+    // producer remembering to strip them.
+    expect(telemetryEventDef("error.app")?.frames).toBeUndefined();
+    expect(
+      validateTelemetryEvent({
+        name: "error.app",
+        at: "x",
+        tier: "T0",
+        frames: ["at handler (/app/src/patients.tsx:42:7)"],
+      }),
+    ).toMatch(/frames not permitted/);
+  });
+
+  it("every error-class event stays pinned at T0 — an error row is not a measurement of a person", () => {
+    for (const name of ["error.host", "error.app", "csp.violation"]) {
+      expect(telemetryEventDef(name)?.maxTier).toBe("T0");
+      expect(telemetryEventDef(name)?.class).toBe("error");
+    }
   });
 });
 

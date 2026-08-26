@@ -142,6 +142,47 @@ export const TELEMETRY_EVENTS = {
     class: "product",
     question: "New-project creation. Rides an authenticated request; identity is discarded at the sink.",
   },
+  // ── §9: error and crash reporting ─────────────────────────────────────────
+  // Error reporting CANNOT use the §5 allowlist model: a stack trace is arbitrary
+  // text nobody designed and nobody can sanitise at the source. `Cannot read
+  // property 'ssn' of undefined` is an exception message and a data leak.
+  //
+  // **The cut is FRAME ORIGIN** — mechanical, not a judgement call. Host-origin
+  // frames are collected (and symbolicated offline from build-time source maps)
+  // with a SCRUBBED message; sandbox frames are replaced with a placeholder and a
+  // count. `frames` is registry-gated precisely because a frame is not a `prop`
+  // and the scalar discipline does not reach it.
+  "error.host": {
+    props: ["name", "fingerprint", "scope", "message", "sandboxFrames", "externalFrames", "repeated"],
+    // T0 forever. An error row is not a measurement of a person, and keying it
+    // would make the operator sink a per-user trail of failures.
+    maxTier: "T0",
+    class: "error",
+    frames: true,
+    question:
+      "Is the host failing, where, and how often — the content-free half of `does the site boot` that would have caught the post-deploy chunk-404 incident.",
+  },
+  // The operator's view of an APP error: app identity, error constructor name,
+  // boot vs steady-state, count. **Content-free by construction** — no frames key
+  // at all, so G-TEL-5 cannot regress by someone adding one to a props bag. The
+  // user still sees the full trace in the region error surface, at zero retention.
+  "error.app": {
+    props: ["app", "name", "scope", "sandboxFrames", "repeated"],
+    maxTier: "T0",
+    class: "error",
+    question:
+      "Are apps failing, and which — the content-free operator row. The full trace goes to the user's screen, never to us.",
+  },
+  // §9: CSP violations ride the same pipe, per HOST_ORIGIN_HARDENING_SPEC §2.1's
+  // rule that the report endpoint MUST be same-origin or backend-owned. Only the
+  // blocked ORIGIN is recorded — a `blockedURI` can be a `data:` URL whose body
+  // is the injected content itself.
+  "csp.violation": {
+    props: ["directive", "disposition", "blockedOrigin", "sourceFile", "line", "severity"],
+    maxTier: "T0",
+    class: "error",
+    question: "Is anything being injected into the host origin, and which directive caught it?",
+  },
   // ── §6: LLM intensity. Extracted at the `llm.chat` service seam and NEVER touching
   // `messages`. Its own toggle: opt-out for platform-billed usage, OPT-IN for BYO-key,
   // because BYO-key spend is the user's own.
