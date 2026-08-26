@@ -142,6 +142,33 @@ export const TELEMETRY_EVENTS = {
     class: "product",
     question: "New-project creation. Rides an authenticated request; identity is discarded at the sink.",
   },
+  // ── §6.1: the load-profiling marker subset ────────────────────────────────
+  // LOAD_PROFILING_SPEC §3's vocabulary **cannot be field-collected wholesale.**
+  // `ir.open` carries `url`/`ns`/`repo`/`ref`; `ir.transpile` emits per-module
+  // sub-marks whose **marker NAME is a file path** out of the user's own
+  // repository, including private repos and local working trees; `ir.deps` emits
+  // per-package sub-marks of unbounded cardinality.
+  //
+  // **A marker name is not a `prop`**, so the §5 scalar/8-key/256-char discipline
+  // never reaches it. Field-collecting the vocabulary wholesale would put private
+  // file paths into the analytics sink under a row labelled T0. Hence a strict
+  // ALLOWLISTED SUBSET, enforced at the host before anything is emitted — the
+  // props below are the whole of what may ever cross.
+  "perf.load": {
+    props: [
+      "coordinate",
+      "coordinateClass",
+      "cold",
+      "cacheHit",
+      "loadSource",
+      "interactiveMs",
+      "transpileMs",
+      "depsMs",
+    ],
+    maxTier: "T0",
+    class: "product",
+    question: "Per-app load time in the field — how long a real app takes to become interactive on a real network.",
+  },
   // ── §9: error and crash reporting ─────────────────────────────────────────
   // Error reporting CANNOT use the §5 allowlist model: a stack trace is arbitrary
   // text nobody designed and nobody can sanitise at the source. `Cannot read
