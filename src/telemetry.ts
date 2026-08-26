@@ -142,6 +142,40 @@ export const TELEMETRY_EVENTS = {
     class: "product",
     question: "New-project creation. Rides an authenticated request; identity is discarded at the sink.",
   },
+  // ── §6.2: boundary observation, held to the security-events discipline ─────
+  //
+  // The host can observe what an app does at the dispatch boundary without app
+  // cooperation. This is **deliberately the narrowest collection in the design**,
+  // for a reason recorded rather than assumed.
+  //
+  // `UI_AS_APPS_SPEC` §8.9 rules `mounts:registry` permanently first-party-only,
+  // with no consent path ever, because it is "a cross-app existence-and-activity
+  // oracle over the user's whole working set… No consent copy can make that
+  // legible." A per-pseudonym record of which repositories were run and which apps
+  // were invoked, retained for a year, is the SERVER-SIDE EQUIVALENT with a longer
+  // memory. If no consent copy can legitimise that when an app asks, the absence of
+  // any ask is not an improvement.
+  //
+  // So this row is held to the discipline of the stream it resembles: **no
+  // pseudonym (T0, and the tier ceiling enforces it), 30-day retention (the
+  // `boundary` class decides the sink table), operator-only, and excluded from the
+  // §13 analysis surface.** It is never joined to T2 rows and is never a source for
+  // any publisher-visible or user-visible number.
+  //
+  // **Allowlisted is not safe.** That a `net:fetch` occurred is a host fact; WHICH
+  // HOST was fetched is a string the app chose. So `targetIndex` is an INDEX into
+  // the app's manifest-declared set — never the host string. Otherwise a declared
+  // key becomes the leak channel while the undeclared-key check reports success,
+  // which is precisely the G-TEL-4 shape.
+  "dispatch.observed": {
+    props: ["kind", "method", "outcome", "targetIndex", "streaming"],
+    // T0, and the ceiling is the enforcement: even in a fully signed-in session this
+    // row cannot acquire a pseudonym, whatever a future producer passes.
+    maxTier: "T0",
+    class: "boundary",
+    question:
+      "What do apps do at the dispatch boundary — operator-only, 30 days, no pseudonym, and excluded from the analysis surface.",
+  },
   // ── §6.1: the load-profiling marker subset ────────────────────────────────
   // LOAD_PROFILING_SPEC §3's vocabulary **cannot be field-collected wholesale.**
   // `ir.open` carries `url`/`ns`/`repo`/`ref`; `ir.transpile` emits per-module
