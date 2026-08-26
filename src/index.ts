@@ -87,3 +87,31 @@ export {
   validateTelemetryEvent,
   validateTelemetryBatch,
 } from "./telemetry";
+
+// ── The app-analytics vocabulary contract (APP_ANALYTICS_SPEC §3/§5, R3-350) ──
+// Shared for the same reason the telemetry registry is: the host validates every app
+// event before batching and the backend validates the batch at ingest, and two
+// implementations of "is this event in the declared vocabulary" would drift exactly the
+// way R3-343's two vocabularies did.
+export type {
+  AppPropType,
+  AppPropDecl,
+  AppEventDecl,
+  AppAnalyticsVocabulary,
+  AppAnalyticsEvent,
+} from "./appAnalytics";
+export {
+  APP_VOCAB_MAX_SHAPES,
+  APP_MAX_PROPS_PER_EVENT,
+  APP_MAX_STR,
+  APP_MAX_EVENTS_PER_USER_PER_DAY,
+  APP_MAX_EVENT_NAMES,
+  APP_MAX_ROUTES,
+  vocabularyShapeCount,
+  vocabularyBits,
+  validateVocabulary,
+  canonicalVocabulary,
+  vocabularyHash,
+  matchRoutePattern,
+  validateAppEvent,
+} from "./appAnalytics";
