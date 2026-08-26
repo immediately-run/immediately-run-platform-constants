@@ -115,3 +115,33 @@ export {
   matchRoutePattern,
   validateAppEvent,
 } from "./appAnalytics";
+
+// ── The shared security-events registry (SECURITY_EVENTS_STREAM_SPEC §5.5, R3-343) ──
+// The stream this package's telemetry registry was modelled on. It kept its own
+// vocabulary in the CONSUMER (a `KIND_PREFIXES` list in the backend), it drifted from
+// the producers in site-main, and validation is fail-closed — so the operator stream
+// rejected ~100% of its batches for months while looking merely quiet. Same fix,
+// applied to the original: one closed table of EXACT kinds, imported by both sides,
+// with a two-way drift check in each repo.
+export type {
+  SecuritySeverity,
+  SecurityEventClass,
+  SecurityEventDef,
+  SecurityEventKind,
+  SecurityEvent,
+  SecurityEventBatch,
+  SecurityRejection,
+  SecurityBatchResult,
+} from "./securityEvents";
+export {
+  SECURITY_EVENT_KINDS,
+  SECURITY_MAX_BATCH,
+  SECURITY_DETAIL_MAX_KEYS,
+  SECURITY_DETAIL_MAX_STR,
+  securityEventKinds,
+  securityEventDef,
+  classifySecurityKind,
+  classifySecuritySeverity,
+  validateSecurityEvent,
+  validateSecurityBatch,
+} from "./securityEvents";
