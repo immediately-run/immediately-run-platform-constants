@@ -34,6 +34,32 @@ import {
 } from "@immediately-run/platform-constants";
 ```
 
+### The shared telemetry event registry (R3-344)
+
+`PLATFORM_TELEMETRY_SPEC` §5 requires **one** event vocabulary imported by both the
+producer (`site-main`) and the fail-closed ingest validator (`immediately-run-backend`).
+The operator security-events stream shipped with the vocabulary in one repo and the
+registry hand-mirrored in the other; they drifted, and the stream rejected ~100% of its
+batches for months while looking merely quiet (R3-343). A prefix list only the consumer
+holds cannot be kept true by review — so it lives here, and a CI drift check runs in
+**both directions** in **both** repos.
+
+```ts
+import {
+  TELEMETRY_EVENTS,          // the closed vocabulary: props, maxTier, class, question
+  telemetryEventNames,       // sorted names — the registry side of the drift check
+  telemetryEventDef,         // (name) => def | null
+  validateTelemetryEvent,    // one event vs. the registry + §5 discipline
+  validateTelemetryBatch,    // a POSTed batch; see the granularity note below
+  TELEMETRY_MAX_BATCH, TELEMETRY_MAX_PROP_KEYS, TELEMETRY_MAX_STR, TELEMETRY_MAX_FRAMES,
+} from "@immediately-run/platform-constants";
+```
+
+**Batch granularity is deliberate and asymmetric:** an unregistered *name* rejects only
+its own event, while a *props-discipline* violation rejects the whole batch. The two are
+different failures — whole-batch rejection exists so a leak fails a test; applied to a
+vocabulary drift it turns a rename into a total outage of the stream.
+
 ## Develop
 
 ```

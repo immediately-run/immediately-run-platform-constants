@@ -62,3 +62,28 @@ export type {
   MdxMetadataRejection,
   MdxMetadataValidation,
 } from "./mdxMetadata";
+
+// ── The shared telemetry event registry (PLATFORM_TELEMETRY_SPEC §5, R3-344) ──
+// ONE vocabulary imported by both the host producer (site-main) and the backend
+// ingest validator, because the security-events stream drifted exactly this way and
+// rejected ~100% of its batches for months (R3-343).
+export type {
+  TelemetryTier,
+  TelemetryEventClass,
+  TelemetryEventDef,
+  TelemetryEventName,
+  TelemetryEvent,
+  TelemetryBatch,
+  TelemetryBatchResult,
+} from "./telemetry";
+export {
+  TELEMETRY_EVENTS,
+  TELEMETRY_MAX_PROP_KEYS,
+  TELEMETRY_MAX_STR,
+  TELEMETRY_MAX_BATCH,
+  TELEMETRY_MAX_FRAMES,
+  telemetryEventNames,
+  telemetryEventDef,
+  validateTelemetryEvent,
+  validateTelemetryBatch,
+} from "./telemetry";
