@@ -156,6 +156,16 @@ export const SECURITY_EVENT_KINDS = {
     class: "abuse",
     why: "Column-focus transfers exceeded the flicker budget (FT-3, capacity-class and fail-open).",
   },
+  // Producer: site-main `src/editor/chrome/columnFocus.ts` (`revealEditorActivity`,
+  // TOOLS_ACTIVITY_SPEC §5.2 / R3-389). The gesture and rate-limit refusals of the
+  // cross-activity move reuse the two kinds above; this one is the STRUCTURAL refusal —
+  // the host could not resolve, from its own state, an activity that owns the editor
+  // to move the user to. The caller never names the target (G-TOOL-11), so this is
+  // never "the app asked for the wrong place": it is the host declining to guess.
+  "focus:cross-activity-denied": {
+    class: "abuse",
+    why: "An `editor:reveal` cross-activity move was refused because no activity owning the editor could be resolved from host state (TOOLS_ACTIVITY_SPEC §5.2, R3-389).",
+  },
 
   // ── host-internal signal → severity-mapped ────────────────────────────────
   // Producer: site-main `src/filesystem/overlaySweep.ts`.

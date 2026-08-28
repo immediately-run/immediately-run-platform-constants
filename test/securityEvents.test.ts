@@ -86,6 +86,7 @@ describe("the registry is closed and self-describing", () => {
       "bundle-extent:outside-write",
       "focus:denied-no-activation",
       "focus:rate-limited",
+      "focus:cross-activity-denied",
       "chrome:activity-dropped",
     ]) {
       expect(securityEventDef(kind)).not.toBeNull();
