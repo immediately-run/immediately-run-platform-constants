@@ -147,6 +147,11 @@ export const SECURITY_EVENT_KINDS = {
     class: "abuse",
     why: "The host forwarder dropped events at its buffer cap before this batch. Recorded so a drop-capped stream is visible rather than merely shorter — the count was previously sent and discarded.",
   },
+  // Producer: backend `src/contributeGate.ts` (the TS-18 chokepoint).
+  "contribute:rate-limited": {
+    class: "abuse",
+    why: "A contribute PR creation was refused at the backend chokepoint for exceeding the per-(uid, appKey) or per-uid PR-creation budget (TRUST_AND_SAFETY_SPEC §6 TS-18 — identity abuse, fail-closed). Expected under spam, so WARNING, never pages.",
+  },
   // Producers: site-main `src/editor/chrome/columnFocus.ts`.
   "focus:denied-no-activation": {
     class: "abuse",

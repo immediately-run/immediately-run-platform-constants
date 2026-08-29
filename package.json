@@ -1,6 +1,6 @@
 {
   "name": "@immediately-run/platform-constants",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "The single source of truth for cross-repo platform vocabulary (the .immediately.run cache-zip sidecar layout + the content contract: APP_ROOT, the metadata key space, the frontmatter envelope, the mdx-metadata sidecar schema; the shared telemetry + security-events registries). Consumed by cli, sandbox, and site-main so a rename/extension touches ONE package, not N repos in lockstep (R3-104).",
   "license": "UNLICENSED",
   "repository": {
