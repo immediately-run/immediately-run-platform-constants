@@ -132,6 +132,11 @@ export const SECURITY_EVENT_KINDS = {
     class: "abuse",
     why: "The §8.4 gate refused an app→host call. The T24 probing-detection signal — high traffic by design, so it must never page. Renamed from `gate:forbidden`, which is the rename R3-343 caught.",
   },
+  // Producer: site-main `src/auth/oauthClient.ts` (`exchangeCodeForToken`).
+  "oauth:state-invalid": {
+    class: "abuse",
+    why: "An OAuth callback carried a `state` whose UNSIGNED nonce was not a plain name (traversal, separators, NUL, over-long) and was refused before any pending-flow read — a crafted callback link steering `loadPending` outside the pending dir (R3-366; bounded today by the backend's signature check, recorded so the attempt is visible).",
+  },
   // Producer: site-main `src/editor/netFetchHandler.ts`.
   "net-fetch:ssrf-refused": {
     class: "abuse",
