@@ -145,3 +145,8 @@ export {
   validateSecurityEvent,
   validateSecurityBatch,
 } from "./securityEvents";
+
+// ── The shared space-creation quota (TRUST_AND_SAFETY_SPEC §6 / TS-13, R3-463) ──
+// Two enforcement points read these (site-main's GENERATED firestore.rules functions
+// and the backend's spaceQuota.ts) so the fail-closed bounds cannot drift.
+export { MAX_USER_SPACES, MAX_APP_SPACES } from "./spaceQuota";
