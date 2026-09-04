@@ -103,6 +103,12 @@ export const SECURITY_EVENT_KINDS = {
     class: "integrity",
     why: "A non-build-default binding tried to claim a broad-elevated / first-party principal — attempted privilege escalation via the principal sugar (R3-98 S2).",
   },
+  // Producer: site-main `src/registry/resolveRegistry.ts` (R3-519, PR #478) —
+  // emitted when a registry layer names a region no build default declares.
+  "registry:region-claim-refused": {
+    class: "integrity",
+    why: "A registry layer (deployment/synced/device/dev-override) named a region no build default declares — an attempt to mint a region the kernel never declared; dropped and reported (WORKBENCH_MODES_SPEC §10 G-MODE-1 / R-MODE-1).",
+  },
   // Producers: site-main `src/registry/fetchRelease.ts` + `src/registry/releaseLock.ts`.
   "release:unpinned-refused": {
     class: "integrity",
