@@ -22,9 +22,21 @@ export interface LlmRelayEndpoint {
 }
 
 export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
-  { providerId: "llm.chat.openai", origin: "https://api.openai.com", path: "/v1/chat/completions" },
-  { providerId: "llm.chat.opencode-go", origin: "https://opencode.ai", path: "/zen/go/v1/chat/completions" },
-  { providerId: "llm.chat.opencode-zen", origin: "https://opencode.ai", path: "/zen/v1/chat/completions" },
+  {
+    providerId: "llm.chat.openai",
+    origin: "https://api.openai.com",
+    path: "/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.opencode-go",
+    origin: "https://opencode.ai",
+    path: "/zen/go/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.opencode-zen",
+    origin: "https://opencode.ai",
+    path: "/zen/v1/chat/completions",
+  },
   {
     providerId: "llm.chat.zai-coding",
     origin: "https://api.z.ai",
@@ -38,18 +50,23 @@ export const LLM_RELAY_METHOD = "POST";
 /**
  * The vetted endpoint `url` names, or `null`.
  *
- * Exact on origin and path: OpenCode Go and Zen share an origin and differ only by path, so a
- * prefix or origin match would admit more than any row names. A query, a fragment or userinfo
- * is never part of a chat completion, and accepting one would widen the match the same way.
+ * The whole normalized URL must equal the row's: OpenCode Go and Zen share an origin and differ
+ * only by path, so a prefix or origin match would admit more than any row names. Comparing the
+ * full `href` also refuses userinfo, a query and a fragment — even an empty `?` or `#`, which
+ * the `search` and `hash` fields report as "" — since none is part of a chat completion.
  */
-export function llmRelayEndpointFor(url: string, method: string): LlmRelayEndpoint | null {
+export function llmRelayEndpointFor(
+  url: string,
+  method: string,
+): LlmRelayEndpoint | null {
   if (method.toUpperCase() !== LLM_RELAY_METHOD) return null;
-  let parsed: URL;
+  let href: string;
   try {
-    parsed = new URL(url);
+    href = new URL(url).href;
   } catch {
     return null;
   }
-  if (parsed.username || parsed.password || parsed.search || parsed.hash) return null;
-  return LLM_RELAY_ENDPOINTS.find((e) => e.origin === parsed.origin && e.path === parsed.pathname) ?? null;
+  return (
+    LLM_RELAY_ENDPOINTS.find((e) => href === `${e.origin}${e.path}`) ?? null
+  );
 }

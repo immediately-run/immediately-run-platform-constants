@@ -1,4 +1,8 @@
-import { LLM_RELAY_ENDPOINTS, LLM_RELAY_METHOD, llmRelayEndpointFor } from "../src/index";
+import {
+  LLM_RELAY_ENDPOINTS,
+  LLM_RELAY_METHOD,
+  llmRelayEndpointFor,
+} from "../src/index";
 
 const rows = LLM_RELAY_ENDPOINTS.map((e) => [e.providerId, e] as const);
 
@@ -16,7 +20,9 @@ describe("the vetted endpoint list", () => {
 
 describe("llmRelayEndpointFor", () => {
   it.each(rows)("admits %s at its exact URL by POST, in any case", (_id, e) => {
-    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, LLM_RELAY_METHOD)).toBe(e);
+    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, LLM_RELAY_METHOD)).toBe(
+      e,
+    );
     expect(llmRelayEndpointFor(`${e.origin}${e.path}`, "post")).toBe(e);
   });
 
@@ -31,6 +37,12 @@ describe("llmRelayEndpointFor", () => {
     for (const url of [
       `${e.origin}${e.path}?stream=true`,
       `${e.origin}${e.path}#x`,
+      // An empty query or fragment still changes the URL; `search` and `hash` read "" for both.
+      `${e.origin}${e.path}?`,
+      `${e.origin}${e.path}#`,
+      // Each half of userinfo on its own, so neither refusal rides on the other.
+      `https://user@${host}${e.path}`,
+      `https://:pass@${host}${e.path}`,
       `https://user:pass@${host}${e.path}`,
       `http://${host}${e.path}`,
       `${e.origin}${e.path}/more`,
@@ -42,8 +54,12 @@ describe("llmRelayEndpointFor", () => {
   });
 
   it("tells two products on one origin apart by path", () => {
-    const go = LLM_RELAY_ENDPOINTS.find((e) => e.providerId === "llm.chat.opencode-go")!;
-    const zen = LLM_RELAY_ENDPOINTS.find((e) => e.providerId === "llm.chat.opencode-zen")!;
+    const go = LLM_RELAY_ENDPOINTS.find(
+      (e) => e.providerId === "llm.chat.opencode-go",
+    )!;
+    const zen = LLM_RELAY_ENDPOINTS.find(
+      (e) => e.providerId === "llm.chat.opencode-zen",
+    )!;
     expect(go.origin).toBe(zen.origin);
     expect(llmRelayEndpointFor(`${go.origin}${go.path}`, "POST")).toBe(go);
     expect(llmRelayEndpointFor(`${zen.origin}${zen.path}`, "POST")).toBe(zen);
