@@ -150,3 +150,9 @@ export {
 // Two enforcement points read these (site-main's GENERATED firestore.rules functions
 // and the backend's spaceQuota.ts) so the fail-closed bounds cannot drift.
 export { MAX_USER_SPACES, MAX_APP_SPACES } from "./spaceQuota";
+
+// ── The host LLM relay's vetted endpoints (LLM_AND_AGENTS_SPEC §2.2.1 E8, R3-581) ──
+// The backend relay's authority for host LLM traffic, and the list site-main's catalogue
+// test holds its `backend-proxied` rows against.
+export type { LlmRelayEndpoint } from "./llmRelay";
+export { LLM_RELAY_ENDPOINTS, LLM_RELAY_METHOD, llmRelayEndpointFor } from "./llmRelay";
