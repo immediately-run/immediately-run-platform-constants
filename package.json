@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "jest",
-    "lint": "eslint src test",
+    "lint": "eslint src test --max-warnings 0",
     "check:dependency-free": "node scripts/check-dependency-free.mjs --self-test && node scripts/check-dependency-free.mjs",
     "prepare": "npm run build",
     "check:pins": "node scripts/check-dependency-pins.mjs --self-test && node scripts/check-dependency-pins.mjs",
