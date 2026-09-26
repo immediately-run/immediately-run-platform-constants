@@ -182,6 +182,11 @@ export const SECURITY_EVENT_KINDS = {
     class: "abuse",
     why: "An `editor:reveal` cross-activity move was refused because no activity owning the editor could be resolved from host state (TOOLS_ACTIVITY_SPEC §5.2, R3-389).",
   },
+  // Producer: site-main `src/editor/task/runTaskInvoke.ts` (`runAppDeclaredOpener`).
+  "opener:open-suppressed": {
+    class: "abuse",
+    why: "A marker-initiated `open-declared` was refused by the §4b.3 open budget (per carrying resource or per calling app) — the bound on app-planted markers relaunching a bound opener (BUNDLE_EMBEDDING §4b.3/§4b.7 SA-7, R3-547). Expected under attack; counted, never paged.",
+  },
 
   // ── host-internal signal → severity-mapped ────────────────────────────────
   // Producer: site-main `src/filesystem/overlaySweep.ts`.
