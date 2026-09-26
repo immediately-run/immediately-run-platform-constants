@@ -185,7 +185,7 @@ export const SECURITY_EVENT_KINDS = {
   // Producer: site-main `src/editor/task/runTaskInvoke.ts` (`runAppDeclaredOpener`).
   "opener:open-suppressed": {
     class: "abuse",
-    why: "A marker-initiated `open-declared` was refused by the §4b.3 open budget (per carrying resource or per calling app) — the bound on app-planted markers relaunching a bound opener (BUNDLE_EMBEDDING §4b.3/§4b.7 SA-7, R3-547). Expected under attack; counted, never paged.",
+    why: "A marker-initiated `open-declared` was refused by the §4b.3 open budget: the carrying resource's or the calling app's allowance was spent, or the meter's key table was full — the bound on app-planted markers relaunching a bound opener (BUNDLE_EMBEDDING §4b.3/§4b.7 SA-7, R3-547). Expected under attack; counted, never paged. NOT emitted for an unwired budget, which is a host defect, nor for the refused-probe ledger.",
   },
 
   // ── host-internal signal → severity-mapped ────────────────────────────────
