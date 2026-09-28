@@ -151,6 +151,11 @@ export {
 // and the backend's spaceQuota.ts) so the fail-closed bounds cannot drift.
 export { MAX_USER_SPACES, MAX_APP_SPACES } from "./spaceQuota";
 
+// ── The shared space-name length bound (FILE_SHARING_SPEC §9.7, R3-723) ──
+// Same drift argument as the quota pair: the rules backstop and the action gate must
+// never disagree about how long a space name may be.
+export { MAX_SPACE_NAME_LENGTH } from "./spaceName";
+
 // ── The host LLM relay's vetted endpoints (LLM_AND_AGENTS_SPEC §2.2.1 E8, R3-581) ──
 // The backend relay's authority for host LLM traffic, and the list site-main's catalogue
 // test holds its `backend-proxied` rows against.
