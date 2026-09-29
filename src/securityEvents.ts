@@ -182,8 +182,8 @@ export const SECURITY_EVENT_KINDS = {
     class: "abuse",
     why: "An `editor:reveal` cross-activity move was refused because no activity owning the editor could be resolved from host state (TOOLS_ACTIVITY_SPEC §5.2, R3-389).",
   },
-  // Producer: site-main `src/filesystem/exportfs.ts` (the export serving handler's
-  // write meter, R3-736).
+  // Producer: site-main `src/filesystem/spaceWriteBudget.ts` (`reportSpaceWriteThrottle`),
+  // fired by `exportfs.ts`'s serving handler through the per-export `onThrottle` hook.
   "space-write:throttled": {
     class: "abuse",
     why: "A frame's write through a space export was refused at the per-(reader, space) token-bucket budget after the bounded wait (SPACES_UI_SPEC §6.6, TS-13's fail-closed quota precedent). Emitted at most once per second per key — the flood must not flood. Expected under the presenting heartbeat class of load; counted, never paged.",
