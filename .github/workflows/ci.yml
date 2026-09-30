@@ -42,6 +42,10 @@ jobs:
       # and merged anyway. `--self-test` runs first: a gate that cannot fail is not a
       # gate, and it replays sdk #112's real diff rather than a hypothetical.
       - run: npm run check:pins
+      # R3-868 — the manifest↔lock version sync (the 0.13.0/0.12.1 desync the
+      # R3-678 gate found by hand; check:publish-version compares against the
+      # npm registry, never against the lock).
+      - run: npm run check:lock-version
       # R3-327 check 2 — shipped bytes changed and `version` did not. The publish step
       # below already refuses this, correctly, but only on a push to `main`: a PR never
       # runs it, so the cost lands on `main` and on whoever pushes next. Same question,
