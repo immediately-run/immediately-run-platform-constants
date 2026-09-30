@@ -203,6 +203,21 @@ export const TELEMETRY_EVENTS = {
     class: "product",
     question: "Per-app load time in the field — how long a real app takes to become interactive on a real network.",
   },
+  // ── TENANCY_SPEC §10 Phase 1: the dual-read drain signal (R3-678) ─────────
+  //
+  // Every bare-path read the host performs during the tenant-prefix migration
+  // window — a doc fallback (tenant absent) or a merged listing's bare half —
+  // counts here. The `collection` prop names the Firestore collection (never a
+  // uid or spaceId; the G-TEL-4 discipline), and Phase 3's drain (R3-680) reads
+  // this counter falling to zero as the backfill completes. T0 because a
+  // migration counter needs no identity at all — the ceiling is the enforcement.
+  "migration.bareRead": {
+    props: ["collection"],
+    maxTier: "T0",
+    class: "product",
+    question:
+      "How many reads still resolve the bare (pre-tenant) layout during the tenancy migration window — the Phase 3 drain signal (R3-678/R3-680).",
+  },
   // ── §9: error and crash reporting ─────────────────────────────────────────
   // Error reporting CANNOT use the §5 allowlist model: a stack trace is arbitrary
   // text nobody designed and nobody can sanitise at the source. `Cannot read
