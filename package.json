@@ -26,7 +26,8 @@
     "check:dependency-free": "node scripts/check-dependency-free.mjs --self-test && node scripts/check-dependency-free.mjs",
     "prepare": "npm run build",
     "check:pins": "node scripts/check-dependency-pins.mjs --self-test && node scripts/check-dependency-pins.mjs",
-    "check:publish-version": "node scripts/check-publish-version.mjs --self-test && node scripts/check-publish-version.mjs"
+    "check:publish-version": "node scripts/check-publish-version.mjs --self-test && node scripts/check-publish-version.mjs",
+    "check:lock-version": "node scripts/check-lock-version.mjs --self-test && node scripts/check-lock-version.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
