@@ -2,13 +2,13 @@
 // check-lock-version.mjs — R3-868: package.json's `version` must equal BOTH of
 // package-lock.json's version fields (the root and `packages[""]`).
 //
-// THE FAILURE THIS EXISTS FOR. A version bump that rides a feature PR touches
+// The failure this exists for. A version bump that rides a feature PR touches
 // only package.json; npm does not rewrite the lock's own version fields unless
-// an install runs, and `npm ci` TOLERATES the mismatch (probed on npm 11: exit
+// an install runs, and `npm ci` tolerates the mismatch (probed on npm 11: exit
 // 0). The lock then lies about what the tree claims to be, with no failure
 // mode anywhere: this happened in platform-constants (manifest 0.13.0, lock
 // 0.12.1), grove (0.1.8/0.1.7, the bump in #79) and dev-fs (0.5.0/0.4.0), each
-// found by HAND by the R3-678 review gate rather than by any check — because
+// found by hand by the R3-678 review gate rather than by any check — because
 // `check:publish-version` (where it exists) compares the manifest against the
 // npm registry, never against the lock.
 //
@@ -22,8 +22,7 @@
 //
 // Run: `node scripts/check-lock-version.mjs`           → exit 1 on a mismatch
 //      `node scripts/check-lock-version.mjs --self-test` → prove it can fail
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
 
 export function checkLockVersion({ pkg, lock, cwd = '.' }) {
   const problems = [];
@@ -48,7 +47,16 @@ export function checkLockVersion({ pkg, lock, cwd = '.' }) {
   return problems;
 }
 
-const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
+const readJson = (p) => {
+  if (!existsSync(p)) {
+    console.error(
+      `check-lock-version: ${p} does not exist — the check needs both files in the repo root. ` +
+        `A missing lock means nothing pins the tree; run \`npm install --package-lock-only\` to write one.`,
+    );
+    process.exit(1);
+  }
+  return JSON.parse(readFileSync(p, 'utf8'));
+};
 
 if (process.argv.includes('--self-test')) {
   const cases = [
@@ -57,7 +65,7 @@ if (process.argv.includes('--self-test')) {
       name: 'a root-only mismatch fails with the fix command',
       pkg: { version: '1.0.1' },
       lock: { version: '1.0.0', packages: { '': { version: '1.0.0' } } },
-      want: /package-lock\.json's root version/,
+      want: /package-lock\.json's root version.*npm install --package-lock-only/,
     },
     {
       name: 'a packages[""] mismatch fails too',
@@ -80,9 +88,11 @@ if (process.argv.includes('--self-test')) {
   process.exit(failed === 0 ? 0 : 1);
 }
 
-const problems = checkLockVersion({
-  pkg: readJson('package.json'),
-  lock: readJson('package-lock.json'),
-});
+const pkg = readJson('package.json');
+const lock = readJson('package-lock.json');
+const problems = checkLockVersion({ pkg, lock });
 for (const p of problems) console.error(`check-lock-version: ${p}`);
-process.exit(problems.length === 0 ? 0 : 1);
+if (problems.length > 0) process.exit(1);
+console.log(
+  `OK: package.json ${pkg.version} = package-lock.json ${lock.version} (root and packages[""]) — manifest and lock agree.`,
+);
