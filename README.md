@@ -60,6 +60,22 @@ its own event, while a *props-discipline* violation rejects the whole batch. The
 different failures — whole-batch rejection exists so a leak fails a test; applied to a
 vocabulary drift it turns a rename into a total outage of the stream.
 
+### The host-mount namespace (R3-352 / R3-463)
+
+The roots under which the host may announce a mount to a sandbox frame — one vocabulary
+read by both the host announce side (`site-main`'s `filesystem/mountPath.ts`) and the
+frame admission side (`sandbox`'s `protocol/mountAdmission.ts`), previously written down
+in both behind a TODO. Drift here is either mounts that mysteriously fail or — if the
+frame's copy is the wider one — a frame honouring a path the host never meant to expose.
+
+```ts
+import { HOST_MOUNT_ROOTS } from "@immediately-run/platform-constants"; // ["mnt", "task"]
+```
+
+`app` and `node_modules` are the bundler's and are unreachable through this list by
+construction. The "strictly below a root" predicate stays in the consumers; only the
+vocabulary lives here.
+
 ## Develop
 
 ```
