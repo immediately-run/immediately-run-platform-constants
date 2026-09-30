@@ -7,7 +7,8 @@
 // asserts before announcing, the frame refuses anything outside it, and a drift
 // between the two is either mounts that mysteriously fail or — worse, if the frame's
 // copy is the wider one — a message that shadows paths the host never meant to
-// expose (ways_of_working §6, "one home per cross-repo vocabulary").
+//   expose (ways_of_working §6: shared vocabularies and cross-repo constants are
+//   published once and consumed, never copied).
 
 /**
  * The roots under which the host may announce a mount to a sandbox frame:
