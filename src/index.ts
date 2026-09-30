@@ -161,3 +161,10 @@ export { MAX_SPACE_NAME_LENGTH } from "./spaceName";
 // test holds its `backend-proxied` rows against.
 export type { LlmRelayEndpoint } from "./llmRelay";
 export { LLM_RELAY_ENDPOINTS, LLM_RELAY_METHOD, llmRelayEndpointFor } from "./llmRelay";
+
+// ── The host-mount namespace (R3-352, R3-463) ───────────────────────────────
+// One vocabulary read by both the host announce side (site-main mountPath.ts) and
+// the frame admission side (sandbox mountAdmission.ts); duplicated behind a TODO
+// until now, on a security boundary where drift is either broken mounts or a frame
+// honouring a path the host never meant to expose.
+export { HOST_MOUNT_ROOTS } from "./mountRoots";
