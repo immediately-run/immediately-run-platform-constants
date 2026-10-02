@@ -297,8 +297,8 @@ export const TELEMETRY_EVENTS = {
     // T1, NOT T2 (review round 1): the only defined consumer (`spaces.daily`) is a
     // rows-basis distribution — no keyed question reads per-space sizes, so the
     // ceiling must not permit a pseudonym ("the ceiling is the enforcement").
-    // store.usage above keeps T2: cost-per-active-user IS a keyed question (§12
-    // signal 2's per-user figures), floored at k=20 downstream.
+    // store.usage above keeps T2: cost-per-active-user IS a keyed
+    // question (§12 signal 3), floored at k=20 downstream.
     maxTier: "T1",
     class: "product",
     question:
