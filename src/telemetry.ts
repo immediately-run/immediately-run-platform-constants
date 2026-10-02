@@ -294,7 +294,12 @@ export const TELEMETRY_EVENTS = {
   },
   "space.stats": {
     props: ["fileCount", "totalSizeBytes"],
-    maxTier: "T2",
+    // T1, NOT T2 (review round 1): the only defined consumer (`spaces.daily`) is a
+    // rows-basis distribution — no keyed question reads per-space sizes, so the
+    // ceiling must not permit a pseudonym ("the ceiling is the enforcement").
+    // store.usage above keeps T2: cost-per-active-user IS a keyed question (§12
+    // signal 2's per-user figures), floored at k=20 downstream.
+    maxTier: "T1",
     class: "product",
     question:
       "The distribution of mounted-space sizes (file count, total bytes per space per window — never a space id) — what sizes the migration must move (STORE_PORTABILITY §12 signal 3).",
