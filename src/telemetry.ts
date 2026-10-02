@@ -276,6 +276,34 @@ export const TELEMETRY_EVENTS = {
     class: "product",
     question: "LLM intensity — which models, at what volume and latency, and with what error classes.",
   },
+  // ── STORE_PORTABILITY_SPEC §12 signals 2/3 (C-10, R3-666) ─────────────────
+  // The migration trigger reads per-user store usage and the distribution of
+  // space sizes; neither was observable. Two aggregate events, emitted per
+  // emission window (10 min and on unload). NEITHER carries a space id or a uid
+  // — the numbers are counts over the session's mounts, and the k=20 floor
+  // governs every served cell downstream (§8.1/§8.2). The props are counts and
+  // stay OFF the dimension allowlist — a raw count as a dimension is a near-key
+  // wearing a dimension's clothes (the `latencyMs` precedent, §8.2); the
+  // catalogue reads them only through the sums measure and the derived bands.
+  "store.usage": {
+    props: ["docReads", "docWrites", "listenerMinutes", "mountedSpaces"],
+    maxTier: "T2",
+    class: "product",
+    question:
+      "Per-user store usage — document reads/writes, live-listener minutes, mounted spaces per window (STORE_PORTABILITY §12 signals 2/3: the migration trigger's evidence).",
+  },
+  "space.stats": {
+    props: ["fileCount", "totalSizeBytes"],
+    // T1, NOT T2 (review round 1): the only defined consumer (`spaces.daily`) is a
+    // rows-basis distribution — no keyed question reads per-space sizes, so the
+    // ceiling must not permit a pseudonym ("the ceiling is the enforcement").
+    // store.usage above keeps T2: cost-per-active-user IS a keyed
+    // question (§12 signal 3), floored at k=20 downstream.
+    maxTier: "T1",
+    class: "product",
+    question:
+      "The distribution of mounted-space sizes (file count, total bytes per space per window — never a space id) — what sizes the migration must move (STORE_PORTABILITY §12 signal 3).",
+  },
 } as const satisfies Record<string, TelemetryEventDef>;
 
 export type TelemetryEventName = keyof typeof TELEMETRY_EVENTS;
