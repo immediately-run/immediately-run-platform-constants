@@ -196,9 +196,12 @@ export const SECURITY_EVENT_KINDS = {
 
   // ── host-internal signal → severity-mapped ────────────────────────────────
   // Producers: site-main `src/editor/device/geolocationBroker.ts` +
-  // `src/editor/device/captureBroker.ts` (R3-689). Host-emitted at the device
-  // action gate on every SUCCESSFUL read — never app-minted, and a refusal is
-  // NOT emitted here (`capability:forbidden` already covers those).
+  // `src/editor/device/captureBroker.ts` — landing WITH THE SITE-MAIN LEG of
+  // R3-689 (wire-first: the vocabulary publishes here so both consumers can pin
+  // it; site-main's own two-way drift check forces the emitters into that leg,
+  // since a registered kind with no producer fails it). Host-emitted at the
+  // device action gate on every SUCCESSFUL read — never app-minted, and a
+  // refusal is NOT emitted here (`capability:forbidden` already covers those).
   "device:capture": {
     class: "other",
     why: "A device read SUCCEEDED (a geolocation fix delivered, a camera/microphone capture handed over) — the attribution BROWSER_CAPABILITIES_SPEC §2 promises: geolocation has no on-screen indicator, so without this a successful read leaves no trace. Carries the app, the capability and a coarse count — never payload content (no coordinates, no frames).",
