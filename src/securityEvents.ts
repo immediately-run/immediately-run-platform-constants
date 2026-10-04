@@ -195,6 +195,14 @@ export const SECURITY_EVENT_KINDS = {
   },
 
   // ── host-internal signal → severity-mapped ────────────────────────────────
+  // Producers: site-main `src/editor/device/geolocationBroker.ts` +
+  // `src/editor/device/captureBroker.ts` (R3-689). Host-emitted at the device
+  // action gate on every SUCCESSFUL read — never app-minted, and a refusal is
+  // NOT emitted here (`capability:forbidden` already covers those).
+  "device:capture": {
+    class: "other",
+    why: "A device read SUCCEEDED (a geolocation fix delivered, a camera/microphone capture handed over) — the attribution BROWSER_CAPABILITIES_SPEC §2 promises: geolocation has no on-screen indicator, so without this a successful read leaves no trace. Carries the app, the capability and a coarse count — never payload content (no coordinates, no frames).",
+  },
   // Producer: site-main `src/filesystem/overlaySweep.ts`.
   "overlay:heal": {
     class: "other",
