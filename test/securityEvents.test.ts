@@ -168,6 +168,34 @@ describe("validateSecurityEvent — §5.5, fail-closed", () => {
   });
 });
 
+describe("device:capture (R3-689) — the successful-read audit kind", () => {
+  it("is registered as a host-internal signal, its `why` naming what it serves", () => {
+    const def = securityEventDef("device:capture");
+    expect(def).not.toBeNull();
+    expect(def!.class).toBe("other"); // severity-mapped, never paging on a success
+    expect(def!.why).toContain("BROWSER_CAPABILITIES_SPEC"); // the §2 attribution claim it backs
+  });
+
+  // The item's test, corrected to the granularity rule R3-343 settled: a scalar
+  // detail ACCEPTS; a map detail is the leak case (SE-2/3), which rejects the WHOLE
+  // batch — never quietly — with the reason naming the kind. (The item's "rejects
+  // that event only" is the UNKNOWN-kind granularity; a detail violation is
+  // deliberately stricter, and the item's exit criterion is the two outcomes, not
+  // the granularity.)
+  it("accepts a scalar detail; a map detail rejects the batch, naming the kind", () => {
+    const good = ok({ kind: "device:capture", detail: { capability: "device:geolocation", n: 1 } });
+    const accepted = validateSecurityBatch({ events: [good] });
+    expect(accepted.ok).toBe(true);
+
+    const bad = ok({ kind: "device:capture", detail: { capability: "device:camera", position: { lat: 1 } } });
+    const res = validateSecurityBatch({ events: [good, bad] });
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.reason).toMatch(/must be scalar/);
+    expect(res.kind).toBe("device:capture");
+  });
+});
+
 describe("validateSecurityBatch — the granularity decision (R3-343)", () => {
   const registered = (i: number): SecurityEvent => ok({ detail: { i } });
 
