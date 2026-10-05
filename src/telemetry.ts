@@ -304,11 +304,13 @@ export const TELEMETRY_EVENTS = {
     question:
       "The distribution of mounted-space sizes (file count, total bytes per space per window — never a space id) — what sizes the migration must move (STORE_PORTABILITY §12 signal 3).",
   },
-  // R3-947 — the picker/backing bound-expiry signal. Every read the host bounds
-  // against a wedged backing store (R3-938's containment, R3-947's mount
-  // handshake cure) reports HERE when the bound fires, so a silent-fallback
-  // empty list is distinguishable from a genuinely empty space in the field —
-  // the 2026-10-05 venue hang was invisible host-side until driven by hand.
+  // R3-947 — the picker/backing bound-expiry signal. Every leg the host bounds
+  // against a wedged backing store — the picker's enumeration and drill-down
+  // reads, the reference-naming read, the new-project WRITE refusal (R3-938's
+  // containment), and the mount handshake (R3-947's cure) — reports HERE when
+  // its bound fires, so a silent-fallback empty list is distinguishable from a
+  // genuinely empty space in the field — the 2026-10-05 venue hang was
+  // invisible host-side until driven by hand.
   // `leg` is one of a closed host-side vocabulary ("enumerate" | "entries" |
   // "naming" | "write" | "mount") — never a space id, uid, or path (G-TEL-4).
   // T0: a bound expiry is content-free, so the ceiling is the enforcement.
