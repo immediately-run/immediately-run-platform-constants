@@ -44,6 +44,12 @@ describe("the registry is closed and self-describing", () => {
     expect(telemetryEventDef("boot.fail")?.maxTier).toBe("T0");
   });
 
+  it("R3-947: the backing-bound expiry signal is T0 and carries only the leg", () => {
+    const def = telemetryEventDef("space.backingBound");
+    expect(def?.maxTier).toBe("T0");
+    expect(def?.props).toEqual(["leg"]);
+  });
+
   it("telemetryEventNames() is the sorted registry side of the drift check", () => {
     expect(telemetryEventNames()).toEqual([...telemetryEventNames()].sort());
     expect(telemetryEventNames()).toContain("session.start");

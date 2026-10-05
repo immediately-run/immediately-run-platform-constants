@@ -304,6 +304,21 @@ export const TELEMETRY_EVENTS = {
     question:
       "The distribution of mounted-space sizes (file count, total bytes per space per window — never a space id) — what sizes the migration must move (STORE_PORTABILITY §12 signal 3).",
   },
+  // R3-947 — the picker/backing bound-expiry signal. Every read the host bounds
+  // against a wedged backing store (R3-938's containment, R3-947's mount
+  // handshake cure) reports HERE when the bound fires, so a silent-fallback
+  // empty list is distinguishable from a genuinely empty space in the field —
+  // the 2026-10-05 venue hang was invisible host-side until driven by hand.
+  // `leg` is one of a closed host-side vocabulary ("enumerate" | "entries" |
+  // "naming" | "write" | "mount") — never a space id, uid, or path (G-TEL-4).
+  // T0: a bound expiry is content-free, so the ceiling is the enforcement.
+  "space.backingBound": {
+    props: ["leg"],
+    maxTier: "T0",
+    class: "product",
+    question:
+      "Does the backing-store containment fire in the field — a stuck space read answering the picker's fallback or refusing a picker write at the bound (R3-938), or the mount handshake expiring (R3-947) — and on which leg?",
+  },
 } as const satisfies Record<string, TelemetryEventDef>;
 
 export type TelemetryEventName = keyof typeof TELEMETRY_EVENTS;
