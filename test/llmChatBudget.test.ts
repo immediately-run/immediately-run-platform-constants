@@ -8,8 +8,7 @@ describe('llm chat session budget default', () => {
     expect(LLM_CHAT_SESSION_BUDGET).toBe(200);
   });
 
-  it('is a usable bound — positive, generous for one conversation, tight against a runaway loop', () => {
-    expect(LLM_CHAT_SESSION_BUDGET).toBeGreaterThan(0);
-    expect(LLM_CHAT_SESSION_BUDGET).toBeLessThanOrEqual(10_000);
+  it('is an integer count (the budget counts provider calls)', () => {
+    expect(Number.isInteger(LLM_CHAT_SESSION_BUDGET)).toBe(true);
   });
 });
