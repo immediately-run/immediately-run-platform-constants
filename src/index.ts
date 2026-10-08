@@ -162,6 +162,11 @@ export { MAX_SPACE_NAME_LENGTH } from "./spaceName";
 export type { LlmRelayEndpoint } from "./llmRelay";
 export { LLM_RELAY_ENDPOINTS, LLM_RELAY_METHOD, llmRelayEndpointFor } from "./llmRelay";
 
+// ── The llm.chat session-budget default (LLM_AND_AGENTS_SPEC §4.2, R3-1065) ──
+// The host-side spend bound's kernel default: per-(appKey, principal), counted per chat
+// session, raised only by the user in Settings — never app-configurable (P1).
+export { LLM_CHAT_SESSION_BUDGET } from "./llmChatBudget";
+
 // ── The host-mount namespace (R3-352, R3-463) ───────────────────────────────
 // One vocabulary read by both the host announce side (site-main mountPath.ts) and
 // the frame admission side (sandbox mountAdmission.ts); duplicated behind a TODO
