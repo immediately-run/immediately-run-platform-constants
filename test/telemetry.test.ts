@@ -44,6 +44,13 @@ describe("the registry is closed and self-describing", () => {
     expect(telemetryEventDef("boot.fail")?.maxTier).toBe("T0");
   });
 
+  it("R3-1059: boot.ok/boot.fail declare the attribution props (routeKind, provider, signedIn)", () => {
+    for (const name of ["boot.ok", "boot.fail"] as const) {
+      const props = telemetryEventDef(name)?.props ?? [];
+      for (const p of ["routeKind", "provider", "signedIn"]) expect(props).toContain(p);
+    }
+  });
+
   it("R3-947: the backing-bound expiry signal is T0 and carries only the leg", () => {
     const def = telemetryEventDef("space.backingBound");
     expect(def?.maxTier).toBe("T0");
