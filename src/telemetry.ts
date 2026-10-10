@@ -249,6 +249,25 @@ export const TELEMETRY_EVENTS = {
     question:
       "Are apps failing, and which — the content-free operator row. The full trace goes to the user's screen, never to us.",
   },
+  // R3-1083/R3-1087's report-only halves, made observable. Both name the method
+  // and the ajv path/key — NEVER the value (the value is the caller's, arbitrary
+  // text nobody sanitised). T0, class `boundary` (R3-1094's prescription): the
+  // key/path strings are caller-influenced, so the events hold the boundary
+  // discipline — operator-only, 30 days, excluded from the §13 surface.
+  "gate.invalidParamsExtra": {
+    props: ["method", "key"],
+    maxTier: "T0",
+    class: "boundary",
+    question:
+      "Do callers send param keys the method's paramsSchema does not declare — the pre-enforcement signal for R3-1083's additionalProperties flip (a hit names a real caller, so the flip would break it).",
+  },
+  "gate.invalidResult": {
+    props: ["method", "path"],
+    maxTier: "T0",
+    class: "boundary",
+    question:
+      "Do handlers' success values fail their resultSchema — the R3-1087 report-only check made visible before any enforcement.",
+  },
   // §9: CSP violations ride the same pipe, per HOST_ORIGIN_HARDENING_SPEC §2.1's
   // rule that the report endpoint MUST be same-origin or backend-owned. Only the
   // blocked ORIGIN is recorded — a `blockedURI` can be a `data:` URL whose body
