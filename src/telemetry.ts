@@ -109,16 +109,22 @@ export const TELEMETRY_EVENTS = {
   // ── §0: the load-bearing gap. A 200 on index.html is fully compatible with a
   // completely broken boot, so only a beacon from the running page can report it.
   "boot.ok": {
-    props: ["ms", "cold"],
+    // R3-1059: `routeKind`/`provider`/`signedIn` attribute a boot to its route table
+    // kind (`present`, `edit`, a mode id, `landing`, … — never the path), the loaded
+    // repo's provider (`github`, `local`, `gist`, `space` — never its name), and the
+    // signed-in state at emit. All three are closed vocabularies with no user content,
+    // so T0 stands: a boolean and two enum tokens do not key a row.
+    props: ["ms", "cold", "routeKind", "provider", "signedIn"],
     maxTier: "T0",
     class: "product",
-    question: "Does the site boot?",
+    question: "Does the site boot — and on which route kind, provider and auth state?",
   },
   "boot.fail": {
-    props: ["failureClass", "ms"],
+    props: ["failureClass", "ms", "routeKind", "provider", "signedIn"],
     maxTier: "T0",
     class: "product",
-    question: "Does the site boot — and when it does not, in which class does it fail?",
+    question:
+      "Does the site boot — and when it does not, in which class does it fail, on which route kind, provider and auth state?",
   },
   // ── §6: repository popularity. Running a repository requires no account, so a T2
   // measurement counts the signed-in minority; `coordinateClass` records whether the
