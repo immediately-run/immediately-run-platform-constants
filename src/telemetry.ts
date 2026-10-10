@@ -253,14 +253,14 @@ export const TELEMETRY_EVENTS = {
   // and the ajv path/key — NEVER the value (the value is the caller's, arbitrary
   // text nobody sanitised). T0: these are the host's own gate observations, not
   // measurements of a person.
-  "invalid-params-extra": {
+  "gate.invalidParamsExtra": {
     props: ["method", "key"],
     maxTier: "T0",
     class: "error",
     question:
       "Do callers send param keys the method's paramsSchema does not declare — the pre-enforcement signal for R3-1083's additionalProperties flip (a hit names a real caller, so the flip would break it).",
   },
-  "invalid-result": {
+  "gate.invalidResult": {
     props: ["method", "path"],
     maxTier: "T0",
     class: "error",
