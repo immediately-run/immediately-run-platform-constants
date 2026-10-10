@@ -123,7 +123,8 @@ export const TELEMETRY_EVENTS = {
     props: ["failureClass", "ms", "routeKind", "provider", "signedIn"],
     maxTier: "T0",
     class: "product",
-    question: "Does the site boot — and when it does not, in which class does it fail?",
+    question:
+      "Does the site boot — and when it does not, in which class does it fail, on which route kind, provider and auth state?",
   },
   // ── §6: repository popularity. Running a repository requires no account, so a T2
   // measurement counts the signed-in minority; `coordinateClass` records whether the
