@@ -50,6 +50,13 @@ describe("the registry is closed and self-describing", () => {
     expect(def?.props).toEqual(["leg"]);
   });
 
+  it("R3-1093: the gate-observation events are T0 and name the method + the key/path, never the value", () => {
+    expect(telemetryEventDef("invalid-params-extra")?.props).toEqual(["method", "key"]);
+    expect(telemetryEventDef("invalid-params-extra")?.maxTier).toBe("T0");
+    expect(telemetryEventDef("invalid-result")?.props).toEqual(["method", "path"]);
+    expect(telemetryEventDef("invalid-result")?.maxTier).toBe("T0");
+  });
+
   it("telemetryEventNames() is the sorted registry side of the drift check", () => {
     expect(telemetryEventNames()).toEqual([...telemetryEventNames()].sort());
     expect(telemetryEventNames()).toContain("session.start");
