@@ -7,28 +7,31 @@ import {
 const rows = LLM_RELAY_ENDPOINTS.map((e) => [e.providerId, e] as const);
 
 describe("the vetted endpoint list", () => {
-  it("names each (origin, path) once, each origin a bare https origin", () => {
-    const pairs = LLM_RELAY_ENDPOINTS.map((e) => `${e.origin}${e.path}`);
-    expect(new Set(pairs).size).toBe(pairs.length);
+  it("names each admitted URL once (chat path AND non-chat paths), each origin a bare https origin", () => {
+    const admitted = LLM_RELAY_ENDPOINTS.flatMap((e) => [e.path, ...(e.paths ?? [])].map((p) => `${e.origin}${p}`));
+    expect(new Set(admitted).size).toBe(admitted.length);
     for (const e of LLM_RELAY_ENDPOINTS) {
       expect(new URL(e.origin).origin).toBe(e.origin);
       expect(e.origin.startsWith("https://")).toBe(true);
-      expect(e.path.startsWith("/")).toBe(true);
+      for (const p of [e.path, ...(e.paths ?? [])]) expect(p.startsWith("/")).toBe(true);
     }
   });
 });
 
 describe("llmRelayEndpointFor", () => {
-  it.each(rows)("admits %s at its exact URL by POST, in any case", (_id, e) => {
-    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, LLM_RELAY_METHOD)).toBe(
-      e,
-    );
-    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, "post")).toBe(e);
+  // Every admitted URL of a row — the chat path AND each non-chat path (R3-1127).
+  const urlRows = LLM_RELAY_ENDPOINTS.flatMap((e) =>
+    [e.path, ...(e.paths ?? [])].map((p) => [`${e.providerId} ${p}`, e, p] as const),
+  );
+
+  it.each(urlRows)("admits %s at its exact URL by POST, in any case", (_id, e, p) => {
+    expect(llmRelayEndpointFor(`${e.origin}${p}`, LLM_RELAY_METHOD)).toBe(e);
+    expect(llmRelayEndpointFor(`${e.origin}${p}`, "post")).toBe(e);
   });
 
-  it.each(rows)("refuses %s by any other method", (_id, e) => {
-    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, "GET")).toBeNull();
-    expect(llmRelayEndpointFor(`${e.origin}${e.path}`, "PUT")).toBeNull();
+  it.each(urlRows)("refuses %s by any other method", (_id, e, p) => {
+    expect(llmRelayEndpointFor(`${e.origin}${p}`, "GET")).toBeNull();
+    expect(llmRelayEndpointFor(`${e.origin}${p}`, "PUT")).toBeNull();
   });
 
   it.each(rows)("refuses anything wider than %s's own URL", (_id, e) => {
