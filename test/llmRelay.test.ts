@@ -4,8 +4,6 @@ import {
   llmRelayEndpointFor,
 } from "../src/index";
 
-const rows = LLM_RELAY_ENDPOINTS.map((e) => [e.providerId, e] as const);
-
 describe("the vetted endpoint list", () => {
   it("names each admitted URL once (chat path AND non-chat paths), each origin a bare https origin", () => {
     const admitted = LLM_RELAY_ENDPOINTS.flatMap((e) => [e.path, ...(e.paths ?? [])].map((p) => `${e.origin}${p}`));
@@ -19,7 +17,7 @@ describe("the vetted endpoint list", () => {
 });
 
 describe("llmRelayEndpointFor", () => {
-  // Every admitted URL of a row — the chat path AND each non-chat path (R3-1127).
+  // Every admitted URL of a row — the chat path and each non-chat path (§4.4).
   const urlRows = LLM_RELAY_ENDPOINTS.flatMap((e) =>
     [e.path, ...(e.paths ?? [])].map((p) => [`${e.providerId} ${p}`, e, p] as const),
   );
@@ -34,21 +32,21 @@ describe("llmRelayEndpointFor", () => {
     expect(llmRelayEndpointFor(`${e.origin}${p}`, "PUT")).toBeNull();
   });
 
-  it.each(rows)("refuses anything wider than %s's own URL", (_id, e) => {
+  it.each(urlRows)("refuses anything wider than %s's own URL", (_id, e, p) => {
     const host = new URL(e.origin).host;
-    const parent = e.path.slice(0, e.path.lastIndexOf("/"));
+    const parent = p.slice(0, p.lastIndexOf("/"));
     for (const url of [
-      `${e.origin}${e.path}?stream=true`,
-      `${e.origin}${e.path}#x`,
+      `${e.origin}${p}?stream=true`,
+      `${e.origin}${p}#x`,
       // An empty query or fragment still changes the URL; `search` and `hash` read "" for both.
-      `${e.origin}${e.path}?`,
-      `${e.origin}${e.path}#`,
+      `${e.origin}${p}?`,
+      `${e.origin}${p}#`,
       // Each half of userinfo on its own, so neither refusal rides on the other.
-      `https://user@${host}${e.path}`,
-      `https://:pass@${host}${e.path}`,
-      `https://user:pass@${host}${e.path}`,
-      `http://${host}${e.path}`,
-      `${e.origin}${e.path}/more`,
+      `https://user@${host}${p}`,
+      `https://:pass@${host}${p}`,
+      `https://user:pass@${host}${p}`,
+      `http://${host}${p}`,
+      `${e.origin}${p}/more`,
       `${e.origin}${parent}`,
       `https://example.com${e.path}`,
     ]) {
@@ -72,7 +70,7 @@ describe("llmRelayEndpointFor", () => {
     expect(llmRelayEndpointFor("not a url", "POST")).toBeNull();
   });
 
-  it("admits a row's non-chat paths exactly, and nothing wider (R3-1127)", () => {
+  it("admits a row's non-chat paths exactly, and nothing wider", () => {
     const openai = LLM_RELAY_ENDPOINTS.find((e) => e.providerId === "llm.chat.openai")!;
     expect(openai.paths).toContain("/v1/embeddings");
     expect(llmRelayEndpointFor("https://api.openai.com/v1/embeddings", "POST")).toBe(openai);

@@ -29,7 +29,7 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     providerId: "llm.chat.openai",
     origin: "https://api.openai.com",
     path: "/v1/chat/completions",
-    // The first non-chat path (R3-1127): OpenAI's documented embeddings endpoint.
+    // The first non-chat path (LLM_AND_AGENTS_SPEC §4.4): OpenAI's documented embeddings endpoint.
     paths: ["/v1/embeddings"],
   },
   {
@@ -71,11 +71,7 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     path: "/v1/chat/completions",
     // Ollama's OpenAI-compatible embeddings endpoint (documented; the site-main overlay
     // offers nomic-embed-text on this row — without this path every call would be
-    // relay-refused AFTER consent).
-    paths: ["/v1/embeddings"],
-    // Ollama's OpenAI-compatible embeddings endpoint (documented; the site-main overlay
-    // offers nomic-embed-text on this row — without this path every call would be
-    // relay-refused AFTER consent).
+    // relay-refused after consent).
     paths: ["/v1/embeddings"],
   },
   {
