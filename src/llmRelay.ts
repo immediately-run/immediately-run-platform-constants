@@ -42,6 +42,34 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     origin: "https://api.z.ai",
     path: "/api/coding/paas/v4/chat/completions",
   },
+  // R3-1125's probed-proxied batch (providerCors.json 2026-10-11): cerebras answers the
+  // preflight but strips ACAO from the error reply; moonshotai/baseten/ollama-cloud answer
+  // no ACAO at all; minimax's preflight refuses the anthropic auth headers.
+  {
+    providerId: "llm.chat.cerebras",
+    origin: "https://api.cerebras.ai",
+    path: "/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.moonshotai",
+    origin: "https://api.moonshot.ai",
+    path: "/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.baseten",
+    origin: "https://inference.baseten.co",
+    path: "/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.ollama-cloud",
+    origin: "https://ollama.com",
+    path: "/v1/chat/completions",
+  },
+  {
+    providerId: "llm.chat.minimax",
+    origin: "https://api.minimax.io",
+    path: "/anthropic/v1/messages",
+  },
 ];
 
 /** Every endpoint is a chat completion, so the relay carries exactly one method for them. */
