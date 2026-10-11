@@ -68,4 +68,13 @@ describe("llmRelayEndpointFor", () => {
   it("refuses a string that is not a URL", () => {
     expect(llmRelayEndpointFor("not a url", "POST")).toBeNull();
   });
+
+  it("admits a row's non-chat paths exactly, and nothing wider (R3-1127)", () => {
+    const openai = LLM_RELAY_ENDPOINTS.find((e) => e.providerId === "llm.chat.openai")!;
+    expect(openai.paths).toContain("/v1/embeddings");
+    expect(llmRelayEndpointFor("https://api.openai.com/v1/embeddings", "POST")).toBe(openai);
+    expect(llmRelayEndpointFor("https://api.openai.com/v1/embeddings?x", "POST")).toBeNull();
+    expect(llmRelayEndpointFor("https://api.openai.com/v1/embeddings/extra", "POST")).toBeNull();
+    expect(llmRelayEndpointFor("https://api.openai.com/v1/embeddings", "GET")).toBeNull();
+  });
 });

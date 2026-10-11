@@ -19,6 +19,9 @@ export interface LlmRelayEndpoint {
   origin: string;
   /** The exact request path. Matching is exact, never by prefix. */
   path: string;
+  /** R3-1127: the row's NON-CHAT paths (embeddings first — e.g. `/v1/embeddings`),
+   *  vetted exactly like `path`. Absent on a chat-only row. */
+  paths?: readonly string[];
 }
 
 export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
@@ -26,6 +29,8 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     providerId: "llm.chat.openai",
     origin: "https://api.openai.com",
     path: "/v1/chat/completions",
+    // The first non-chat path (R3-1127): OpenAI's documented embeddings endpoint.
+    paths: ["/v1/embeddings"],
   },
   {
     providerId: "llm.chat.opencode-go",
@@ -95,6 +100,10 @@ export function llmRelayEndpointFor(
     return null;
   }
   return (
-    LLM_RELAY_ENDPOINTS.find((e) => href === `${e.origin}${e.path}`) ?? null
+    LLM_RELAY_ENDPOINTS.find(
+      (e) =>
+        href === `${e.origin}${e.path}` ||
+        (e.paths ?? []).some((p) => href === `${e.origin}${p}`),
+    ) ?? null
   );
 }
