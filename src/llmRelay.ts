@@ -19,6 +19,9 @@ export interface LlmRelayEndpoint {
   origin: string;
   /** The exact request path. Matching is exact, never by prefix. */
   path: string;
+  /** The row's NON-CHAT paths (LLM_AND_AGENTS_SPEC §4.4; embeddings first — e.g.
+   *  `/v1/embeddings`), vetted exactly like `path`. Absent on a chat-only row. */
+  paths?: readonly string[];
 }
 
 export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
@@ -26,6 +29,8 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     providerId: "llm.chat.openai",
     origin: "https://api.openai.com",
     path: "/v1/chat/completions",
+    // The first non-chat path (LLM_AND_AGENTS_SPEC §4.4): OpenAI's documented embeddings endpoint.
+    paths: ["/v1/embeddings"],
   },
   {
     providerId: "llm.chat.opencode-go",
@@ -64,6 +69,10 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     providerId: "llm.chat.ollama-cloud",
     origin: "https://ollama.com",
     path: "/v1/chat/completions",
+    // Ollama's OpenAI-compatible embeddings endpoint (documented; the site-main overlay
+    // offers nomic-embed-text on this row — without this path every call would be
+    // relay-refused after consent).
+    paths: ["/v1/embeddings"],
   },
   {
     providerId: "llm.chat.minimax",
@@ -72,7 +81,8 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
   },
 ];
 
-/** Every endpoint is a chat completion, so the relay carries exactly one method for them. */
+/** Every vetted path — chat completions and the non-chat kinds (§4.4) alike — is a POST
+ *  JSON call, so the relay carries exactly one method for them. */
 export const LLM_RELAY_METHOD = "POST";
 
 /**
@@ -81,7 +91,7 @@ export const LLM_RELAY_METHOD = "POST";
  * The whole normalized URL must equal the row's: OpenCode Go and Zen share an origin and differ
  * only by path, so a prefix or origin match would admit more than any row names. Comparing the
  * full `href` also refuses userinfo, a query and a fragment — even an empty `?` or `#`, which
- * the `search` and `hash` fields report as "" — since none is part of a chat completion.
+ * the `search` and `hash` fields report as "" — since none is part of a vetted call.
  */
 export function llmRelayEndpointFor(
   url: string,
@@ -95,6 +105,10 @@ export function llmRelayEndpointFor(
     return null;
   }
   return (
-    LLM_RELAY_ENDPOINTS.find((e) => href === `${e.origin}${e.path}`) ?? null
+    LLM_RELAY_ENDPOINTS.find(
+      (e) =>
+        href === `${e.origin}${e.path}` ||
+        (e.paths ?? []).some((p) => href === `${e.origin}${p}`),
+    ) ?? null
   );
 }
