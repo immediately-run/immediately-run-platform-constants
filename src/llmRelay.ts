@@ -42,7 +42,7 @@ export const LLM_RELAY_ENDPOINTS: readonly LlmRelayEndpoint[] = [
     origin: "https://api.z.ai",
     path: "/api/coding/paas/v4/chat/completions",
   },
-  // R3-1125's probed-proxied batch (providerCors.json 2026-10-11): cerebras answers the
+  // The probed-proxied batch (providerCors.json 2026-10-11): cerebras answers the
   // preflight but strips ACAO from the error reply; moonshotai/baseten/ollama-cloud answer
   // no ACAO at all; minimax's preflight refuses the anthropic auth headers.
   {
